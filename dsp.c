@@ -62,14 +62,6 @@ void synthesis(float* out, size_t nframe, float freq, float velocity, float offs
 	// and in C, log is base-e logarithm
 	float loga = logf(nframe+1.0f) / (zero-1.0f);
 
-	float func(int i, float freq, float offset)
-	{
-		int sfreq = srate / freq;
-		i = (int)(i+offset*sfreq) % sfreq;
-		if (i < sfreq/2) return 1;
-		return -1;
-	}
-
 	void overtone(int i, float freq, float velocity, float offset)
 	{
 		if (velocity < 0.01f) return;
