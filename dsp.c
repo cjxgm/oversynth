@@ -58,20 +58,21 @@ void process_midi(size_t frame, uint8_t ev[3])
 static const float zero = 0.001;
 void synthesis(float* out, size_t nframe, float freq, float velocity, float offset)
 {
-	// 1 + log_a(nframe+1) = zero  <=>  ln(a) = ln(nframe+1)/(zero-1)
-	// and in C, log is base-e logarithm
-	float loga = logf(nframe+1.0f) / (zero-1.0f);
-
 	void overtone(int i, float freq, float velocity, float offset)
 	{
 		if (velocity < 0.01f) return;
 		*out += sound_select(-1)(i, freq, offset)*velocity;
 		overtone(i, freq*2.000000f, velocity*0.10, 0.30); // +do: 2^(12/12)
 		overtone(i, freq*1.498307f, velocity*0.19, 0.70); // sol: 2^( 7/12)
-		overtone(i, freq*1.259921f, velocity*0.13, 0.11); // mi : 2^( 4/12)
+		overtone(i, freq*1.259921f, velocity*0.13, 0.11); //  mi: 2^( 4/12)
 		overtone(i, freq/1.498307f, velocity*0.11, 0.37); // -fa: 2^(-7/12)
 		overtone(i, freq/2.000000f, velocity*0.07, 0.43); // -do: 2^(12/12)
 	}
+
+	// 1 + log_a(nframe+1) = zero
+	// so  ln(a) = ln(nframe+1)/(zero-1)
+	// and in C, log is e-based logarithm
+	const float loga = logf(nframe+1.0f) / (zero-1.0f);
 
 	for (int i=0; i<nframe; i++,out++) {
 		float gain = 1 + log(i+1) / loga;
